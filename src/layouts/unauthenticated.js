@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router";
-import imagePath from "../images/path.png";
+import imagePath from "../images/path.PNG";
 
 export default function Unauthenticated() {
   return (

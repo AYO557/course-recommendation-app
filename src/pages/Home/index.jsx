@@ -2,13 +2,13 @@ import DashBoardLayout from "../../Template";
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  const user = { firstname: "John", lastname: "Doe" };
+  // const user = { firstname: "John", lastname: "Doe" };
   return (
     <DashBoardLayout>
       <article>
-        <h1 className="text-2xl font-bold font-sans">
+        {/* <h1 className="text-2xl font-bold font-sans">
           Welcome {user.firstname} {user.lastname}
-        </h1>
+        </h1> */}
         <p className="my-5 font-bold">Ease-access : </p>
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-7 gap-y-10">
           <Link>

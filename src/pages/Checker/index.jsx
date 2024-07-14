@@ -1,9 +1,15 @@
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { Form } from "react-router-dom";
-import Textfield, {MultiLineTextField} from "../../Component/Textfield";
+import Textfield, { MultiLineTextField } from "../../Component/Textfield";
 import Button from "../../Component/Button";
 import SelectCase from "../../Component/Select";
 import { useState } from "react";
+
+export const action = async ({ request, params }) => {
+  const formData = await request.formData();
+  const updates = Object.fromEntries(formData);
+  console.log(updates);
+  return null;
+};
 
 function BestCourse({ status, courses }) {
   return (
@@ -70,13 +76,6 @@ export default function Checker({ modal, setModal, course, category }) {
                   {" "}
                   You selected {course} from the category {category}
                 </p>
-                <p className="mt-5">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Aliquam officiis itaque vero doloribus, est ipsum quaerat quod
-                  voluptatibus ipsam consequuntur doloremque quibusdam sit omnis
-                  illo unde repellendus consequatur explicabo, dignissimos ab,
-                  nisi voluptate eligendi sunt. Aliquid nihil nemo dolorem enim.
-                </p>
                 <div className="mt-7">
                   <BestCourse courses={bestCourseTemplate} status={status} />
                 </div>
@@ -103,8 +102,13 @@ export default function Checker({ modal, setModal, course, category }) {
                       />
                     </div>
                   ))}
-                      <Textfield label={"Jamb Score"} placeholder={'Range: from 0 - 400'} className="w-full mx-2" />
-                      <MultiLineTextField styles={'outline-none'} label={'Additional Comment - Help our algorithm.'} desc={'Expeciting informations like passion for a course, hobbies e.t.c, Leave empty if you dont want to share.\nNot more than 200 words'}/>
+                <MultiLineTextField
+                  styles={"outline-none"}
+                  label={"Additional Comment - Help our algorithm."}
+                  desc={
+                    "Expeciting informations like passion for a course, hobbies e.t.c, Leave empty if you dont want to share.\nNot more than 200 words"
+                  }
+                />
                 <div className="flex my-2">
                   <button
                     type="button"
@@ -118,7 +122,6 @@ export default function Checker({ modal, setModal, course, category }) {
                     Add more
                   </button>
                   <button
-                    type="button"
                     onClick={() => {
                       setInputCount(inputCount - 1);
                     }}
@@ -129,7 +132,7 @@ export default function Checker({ modal, setModal, course, category }) {
                     Minus one
                   </button>
                 </div>
-                <Button>Submit</Button>
+                <Button btnType="submit">Submit</Button>
               </form>
             </main>
           </div>

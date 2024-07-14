@@ -3,7 +3,7 @@ import { BiDownArrow } from "react-icons/bi";
 
 export default function SelectCase({
   index,
-  cases = ["A", "B", "C", "D", "E", "F"],
+  cases = ["A1", "B2", "B3", "C4", "C5", "C6", "D7", "E8", "F9"],
   title = "Choose",
   label,
   chosenCase,

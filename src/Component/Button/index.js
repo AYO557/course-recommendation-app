@@ -5,6 +5,7 @@ export default function Button({
   isDisabled,
   size = "fullwidth",
   variant = "contained",
+  btnType = "submit",
 }) {
   const getBackground = () => {
     if (variant === "contained") {
@@ -31,6 +32,7 @@ export default function Button({
           ? "px-6"
           : ""
       } `}
+      type={btnType}
     >
       {children}
     </button>

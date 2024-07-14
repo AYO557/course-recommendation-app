@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DashBoardLayout from "../../Template";
-import { courses as allCourses } from "../../fileStorage/data";
+import { courses as initialCoursesData } from "../../fileStorage/data";
 import Checker from "../Checker";
-import { Outlet } from "react-router-dom";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
 function getAllCourses() {
-  let all = allCourses.map((c) => {
+  let all = initialCoursesData.map((c) => {
     for (const category in c) {
       const courses = [];
       for (const course in c[category]) {
-        courses.push(course);
+        courses.push({ name: course, isFavorited: false });
       }
       return { category: category, courses: courses };
     }
@@ -18,7 +18,7 @@ function getAllCourses() {
 }
 
 export default function Main({ children }) {
-  const allCourses = getAllCourses();
+  const [allCourses, setAllCourses] = useState(getAllCourses());
   const [openCheckerModal, setOpenCheckerModal] = useState(false);
   const [course, setCourse] = useState(null);
   const [category, setCategory] = useState(null);
@@ -31,28 +31,59 @@ export default function Main({ children }) {
     console.log(openCheckerModal);
   }
 
+  const toggleFavorite = (category, courseName) => {
+    const updatedCourses = allCourses.map((c) => {
+      if (c.category === category) {
+        const updatedCourseList = c.courses.map((course) =>
+          course.name === courseName
+            ? { ...course, isFavorited: !course.isFavorited }
+            : course
+        );
+        return { ...c, courses: updatedCourseList };
+      }
+      return c;
+    });
+    // Update the state with the new list
+    setAllCourses(updatedCourses);
+  };
+
   return (
     <>
       <DashBoardLayout>
         <article>
           <p className="p-2">
             Courses are categorized in relations, select the course you want or
-            clcik on check best for us to choose from the category
+            click on check best for us to choose from the category
           </p>
           <section className="">
             {allCourses.map((c) => (
-              <div className="my-7">
+              <div className="my-7" key={c.category}>
                 <header className="my-3 font-bold text-lg md:text-xl p-3 bg-gray-100">
                   {c.category.replaceAll("_", " ")}
                 </header>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 text-sm md:text-base">
                   {c.courses.map((course) => (
-                    <p
-                      className="p-2 rounded cursor-pointer hover:bg-green-100"
-                      onClick={() => handleSelected(course, c.category)}
+                    <div
+                      className="course-container flex justify-between items-center hover:bg-green-100 p-2"
+                      key={course.name}
                     >
-                      {course.replaceAll("_", " ")}
-                    </p>
+                      <p
+                        className="h-full w-full rounded cursor-pointer flex items-center"
+                        onClick={() => handleSelected(course.name, c.category)}
+                      >
+                        {course.name.replaceAll("_", " ")}
+                      </p>
+                      <div
+                        className="favorite-icon cursor-pointer"
+                        onClick={() => toggleFavorite(c.category, course.name)}
+                      >
+                        {course.isFavorited ? (
+                          <MdFavorite size={20} color="pink" />
+                        ) : (
+                          <MdFavoriteBorder />
+                        )}
+                      </div>
+                    </div>
                   ))}
                 </div>
                 <div className="flex justify-center sm:justify-end">
@@ -74,6 +105,14 @@ export default function Main({ children }) {
         course={course}
         category={category}
       />
+      <style jsx>{`
+        .favorite-icon {
+          visibility: hidden;
+        }
+        .course-container:hover .favorite-icon {
+          visibility: visible;
+        }
+      `}</style>
     </>
   );
 }

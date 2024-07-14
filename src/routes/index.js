@@ -9,7 +9,8 @@ import SignUp from "../pages/Signup";
 import OTPPage from "../pages/OTP";
 import Home from "../pages/Home";
 import Main from "../pages/Main";
-import Checker from "../pages/Checker";
+import { action as mainAction } from "../pages/Checker";
+// import Checker from "../pages/Checker";
 
 const MainBAR = ({ children }) => {
   return (
@@ -69,6 +70,7 @@ const MainRoute = () => {
     {
       path: "/main",
       element: <Main />,
+      action: mainAction,
     },
   ]);
 

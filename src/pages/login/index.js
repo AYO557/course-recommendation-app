@@ -5,20 +5,22 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../Component/Button";
 
 const LoginPage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isBtnDisabled, setIsBtnDisabled] = useState(false);
 
   const handleLogin = () => {
     console.log("Logging in with email:", email, "and password:", password);
-    navigate('/app')
+    navigate("/app");
   };
 
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="bg-white p-8 rounded shadow-md w-[80%] h-[70vh] ">
-        <h2 className="text-5xl text-green-500 font-semibold mb-6">CAREER PATH</h2>
+        <h2 className="text-5xl text-green-500 font-semibold mb-6">
+          CAREER PATH
+        </h2>
         <form onSubmit={handleLogin}>
           <Textfield
             label={"Email"}
@@ -33,9 +35,7 @@ const LoginPage = () => {
             type={"password"}
           />
 
-          <Button  isDisabled={isBtnDisabled}>login</Button> 
-        
-
+          <Button isDisabled={isBtnDisabled}>login</Button>
         </form>
         <div className="mt-4 text-center">
           <Link

@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router";
-import Path from "../images/path.png";
+import imagePath from "../images/path.png";
 
 export default function Unauthenticated() {
   return (
@@ -9,7 +9,7 @@ export default function Unauthenticated() {
         <Outlet />
       </div>
       <div className="w-full h-full lg:w-1/2 bg-white-500 md:flex justify-between items-center p-6 hidden">
-        <img src={Path} className="w-full h-full" object-cover alt="" />
+        <img src={imagePath} className="w-full h-full" object-cover alt="" />
       </div>
     </div>
   );

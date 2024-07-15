@@ -2,41 +2,49 @@ import DashBoardLayout from "../../Template";
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  // const user = { firstname: "John", lastname: "Doe" };
   return (
     <DashBoardLayout>
       <article>
-        {/* <h1 className="text-2xl font-bold font-sans">
-          Welcome {user.firstname} {user.lastname}
-        </h1> */}
         <p className="my-5 font-bold">Ease-access : </p>
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-7 gap-y-10">
-          <Link>
+          <a
+            href="https://www.coursera.org/campus?utm_content=corp-to-landing-for-campus&utm_campaign=website&utm_medium=coursera&utm_source=header&utm_term=b-in"
+            target="_blank"
+            rel="noreferrer"
+          >
             <div className="bg-emerald-200 border rounded p-5 text-center">
               New introduced courses
             </div>
-          </Link>
-          <Link>
+          </a>
+          <a href="https://www.jamb.gov.ng/" target="_blank" rel="noreferrer">
             <div className="bg-pink-200 border rounded p-5 text-center">
               Jamb Updates
             </div>
-          </Link>
-          <Link>
+          </a>
+          <a
+            href="https://www.waecnigeria.org/"
+            target="_blank"
+            rel="noreferrer"
+          >
             <div className="bg-yellow-100 border rounded p-5 text-center">
               Waec News
             </div>
-          </Link>
-          <Link>
+          </a>
+          <a href="https://www.nuc.edu.ng/" target="_blank" rel="noreferrer">
             <div className="bg-slate-300 border rounded p-5 text-center">
               View schools in Nigeria
             </div>
-          </Link>
-          <Link>
+          </a>
+          <a
+            href="https://www.topuniversities.com/"
+            target="_blank"
+            rel="noreferrer"
+          >
             <div className="bg-cyan-300 border rounded p-5 text-center">
               View Shools abroad
             </div>
-          </Link>
-          <Link>
+          </a>
+          <Link to="/main">
             <div className="bg-red-300 border rounded p-5 text-center">
               App update
             </div>

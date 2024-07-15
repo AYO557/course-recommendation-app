@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Textfield from "../../Component/Textfield";
 import Button from "../../Component/Button";
 
@@ -9,33 +9,34 @@ const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [conPassword, setConPassword] = useState("");
-  const [passwordNotMatch, setpasswordNotMatch] = useState(false);
-  const [userExist, setUserExist] = useState(false);
+  const [passwordNotMatch, setPasswordNotMatch] = useState(false);
+  const [userExist, setUserExistState] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (passwordNotMatch) {
-      setTimeout(() => {
-        setpasswordNotMatch(false);
+      const timer = setTimeout(() => {
+        setPasswordNotMatch(false);
       }, 2000);
+      return () => clearTimeout(timer);
     }
 
     if (userExist) {
-      setTimeout(() => {
-        setUserExist(false);
+      const timer = setTimeout(() => {
+        setUserExistState(false);
       }, 2000);
+      return () => clearTimeout(timer);
     }
   }, [passwordNotMatch, userExist]);
-
-  //
 
   const handleSignup = (e) => {
     e.preventDefault();
 
     if (password !== conPassword) {
-      setpasswordNotMatch(true);
+      setPasswordNotMatch(true);
+      return;
     }
-
-    // password !== conPassword && setpasswordNotMatch(true);
 
     const userData = {
       firstName,
@@ -44,73 +45,77 @@ const SignupPage = () => {
       password,
     };
 
-    const existingUsers = JSON.parse(localStorage.getItem("usersInfo"));
-    let usersArr = existingUsers ? existingUsers : [];
+    let existingUsers = JSON.parse(localStorage.getItem("Users")) || [];
+    if (!Array.isArray(existingUsers)) {
+      existingUsers = [];
+    }
 
-    const userExist = usersArr.some((user) => user.email === userData.email);
+    const userAlreadyExists = existingUsers.some(
+      (user) => user.email === userData.email
+    );
 
-    if (userExist) {
-      setUserExist(true);
+    if (userAlreadyExists) {
+      setUserExistState(true);
     } else {
-      usersArr.push(userData);
-      localStorage.setItem("usersInfo", JSON.stringify(usersArr));
+      existingUsers.push(userData);
+      localStorage.setItem("Users", JSON.stringify(existingUsers));
+      navigate("/app");
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className=" p-8 rounded shadow-md w-80 sm:w-[80%]  bg-white">
+      <div className="p-8 rounded shadow-md w-80 sm:w-[80%] bg-white">
         <h2 className="text-2xl font-semibold mb-4">CREATE ACCOUNT</h2>
         {passwordNotMatch && (
           <small className="text-red-500 font-semibold uppercase">
-            password do not match
+            Passwords do not match
           </small>
         )}
         {userExist && (
           <small className="text-red-500 font-semibold uppercase">
-            an account with email address {email} already exists
+            An account with email address {email} already exists
           </small>
         )}
         <form onSubmit={handleSignup} className="flex flex-col gap-2">
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-2">
             <Textfield
-              label={"firstname"}
+              label="First Name"
               onChange={(e) => setFirstName(e.target.value)}
-              type={"text"}
+              type="text"
               value={firstName}
             />
             <Textfield
-              label={"lastname"}
+              label="Last Name"
               onChange={(e) => setLastName(e.target.value)}
-              type={"text"}
+              type="text"
               value={lastName}
             />
           </div>
           <Textfield
-            label={"email"}
+            label="Email"
             onChange={(e) => setEmail(e.target.value)}
-            type={"email"}
+            type="email"
             value={email}
           />
           <Textfield
-            label={"password"}
+            label="Password"
             onChange={(e) => setPassword(e.target.value)}
-            type={"password"}
+            type="password"
             value={password}
           />
           <Textfield
-            label={"confirm password"}
+            label="Confirm Password"
             onChange={(e) => setConPassword(e.target.value)}
-            type={"password"}
+            type="password"
             value={conPassword}
           />
-
           <Button size="medium">Sign Up</Button>
         </form>
         <div className="mt-4 text-center">
           <p className="text-gray-600">
             Already have an account?{" "}
-            <Link to="/app" className="text-green-500 hover:underline">
+            <Link to="/auth" className="text-green-500 hover:underline">
               Login
             </Link>
           </p>

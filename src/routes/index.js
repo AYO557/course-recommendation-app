@@ -12,6 +12,7 @@ import Main from "../pages/Main";
 import { action as mainAction } from "../pages/Checker";
 // import Checker from "../pages/Checker";
 
+// #
 const MainBAR = ({ children }) => {
   return (
     <main className="h-screen w-full bg-slate-50">
@@ -20,8 +21,7 @@ const MainBAR = ({ children }) => {
   );
 };
 
-// /auth/register
-
+// Routes. (all routes)
 const MainRoute = () => {
   const routes = createBrowserRouter([
     {

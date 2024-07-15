@@ -1,18 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Textfield from "../../Component/Textfield";
 import { useNavigate } from "react-router-dom";
 import Button from "../../Component/Button";
 
+// # LocalStorage have been used to improvise authentication here ahead of endpoint delivery.
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isBtnDisabled, setIsBtnDisabled] = useState(false);
+  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
 
-  const handleLogin = () => {
-    console.log("Logging in with email:", email, "and password:", password);
-    navigate("/app");
+  // # enable button.
+  useEffect(() => {
+    email && password ? setIsBtnDisabled(false) : setIsBtnDisabled(true);
+  }, [email, password]);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // const formData = {
+    //   email,
+    //   password,
+    // };
+    const checkData = JSON.parse(localStorage.getItem("Users"));
+    console.log(checkData);
+    if (checkData) {
+      const user = checkData.find((user) => user.email === email);
+      if (user && user.password === password) {
+        localStorage.setItem("Users", JSON.stringify(user));
+        navigate("/app");
+      } else {
+        alert("Invalid email or password");
+      }
+    }
   };
 
   return (
@@ -21,6 +42,7 @@ const LoginPage = () => {
         <h2 className="text-5xl text-green-500 font-semibold mb-6">
           CAREER PATH
         </h2>
+        {/* form  */}
         <form onSubmit={handleLogin}>
           <Textfield
             label={"Email"}

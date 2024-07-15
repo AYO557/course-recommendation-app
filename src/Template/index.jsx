@@ -28,7 +28,10 @@ function TopNav() {
           <Link className="p-2 block" to="/profile">
             View Profile
           </Link>
-          <section className="p-2 cursor-pointer" onClick={() => navigate("/")}>
+          <section
+            className="p-2 cursor-pointer"
+            onClick={() => navigate("/auth")}
+          >
             Logout
           </section>
         </div>

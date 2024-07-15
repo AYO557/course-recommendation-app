@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import axios from "axios";
 import Textfield, { MultiLineTextField } from "../../Component/Textfield";
 import Button from "../../Component/Button";
 import SelectCase from "../../Component/Select";
-import { useState } from "react";
+
+// # This (Checker) component renders the popup field that recommends courses to students.
 
 export const action = async ({ request, params }) => {
   const formData = await request.formData();
@@ -11,29 +14,69 @@ export const action = async ({ request, params }) => {
   return null;
 };
 
-function BestCourse({ status, courses }) {
+// # Recommended courses component.
+function BestCourse({ status, courses, message }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 20;
+
+  // Logic for displaying current courses
+  const indexOfLastCourse = currentPage * coursesPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+  const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
+
+  // Logic for displaying page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(courses.length / coursesPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
   return (
-    <>
+    <div className=" max-h-screen relative ">
       {status === "okay" ? (
         <>
-          <p>Courses with best chances of admission include the following:</p>
-          <div className="mt-3">
-            <div className="flex justify-between font-bold">
-              <div>Course</div>
-              <div>Chance of admission</div>
-            </div>
-            <div className="flex flex-col">
-              {courses.map((course) => (
-                <div className="flex justify-between">
-                  <div>{course.name}</div>
-                  <div className="mr-12">{course.chance}%</div>
-                </div>
-              ))}
-            </div>
-          </div>
+          {message === null ? (
+            <p>Courses with best chances of admission include the following:</p>
+          ) : (
+            <p>{message}</p>
+          )}
+          <ul className="list-disc ">
+            {currentCourses.map((course, index) => (
+              <li key={index}>{course}</li>
+            ))}
+          </ul>
+
           <p className="my-7 text-center">
             Consult your school of choice for more information!
           </p>
+          <div className="flex justify-center mt-4 absolute -bottom-9 md:-bottom-12 ">
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 mx-1 bg-gray-300 rounded"
+            >
+              Previous
+            </button>
+            {pageNumbers.map((number) => (
+              <button
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                className={`px-3 py-1 mx-1 ${
+                  currentPage === number
+                    ? "bg-pink-500 text-white"
+                    : "bg-gray-300"
+                } rounded`}
+              >
+                {number}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === pageNumbers.length}
+              className="px-3 py-1 mx-1 bg-gray-300 rounded"
+            >
+              Next
+            </button>
+          </div>
         </>
       ) : status === "bad" ? (
         <p>
@@ -44,22 +87,75 @@ function BestCourse({ status, courses }) {
       ) : (
         <></>
       )}
-    </>
+    </div>
   );
 }
+
+// # Checker component
 export default function Checker({ modal, setModal, course, category }) {
-  console.log(modal, course, category);
   const [chosenGrade, setChosenGrade] = useState(Array(10).fill(null));
+  const [subjects, setSubjects] = useState(Array(10).fill(""));
   const [status, setStatus] = useState(null);
   const [inputCount, setInputCount] = useState(5);
+  const [bestCourses, setBestCourses] = useState([]);
+  const [message, setMessage] = useState(null);
 
-  const bestCourseTemplate = [
-    { name: "Agricultural Enginering", chance: 99 },
-    { name: "Chemical Enginering", chance: 75 },
-    { name: "Computer Engineering", chance: 60 },
-    { name: "Mechanical Enginering", chance: 50 },
-    { name: "Electrical Enginering", chance: 45 },
-  ];
+  // const bestCourseTemplate = [
+  //   // { name: "Agricultural Enginering"},
+  //   // { name: "Chemical Enginering"},
+  //   // { name: "Computer Engineering"},
+  //   // { name: "Mechanical Enginering"},
+  //   // { name: "Electrical Enginering"},
+  // ];
+
+  const handleInputChange = (index, value) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[index] = value;
+    setSubjects(updatedSubjects);
+  };
+
+  // On submit of the subjects inputted.
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const grades = subjects.reduce((acc, subject, index) => {
+      if (subject && chosenGrade[index]) {
+        acc[subject] = chosenGrade[index];
+      }
+      return acc;
+    }, {});
+
+    const payload = {
+      grades,
+      preferred_course: course,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/submit-grades/",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const gotCourse = response.data;
+        setMessage(gotCourse.Message);
+        setBestCourses(gotCourse["Suggested Courses"]);
+        setStatus("okay");
+        // Handle successful response
+      } else {
+        setStatus("bad");
+        // Handle error response
+      }
+    } catch (error) {
+      console.error("Error submitting grades:", error);
+      setStatus("bad");
+    }
+  };
 
   return (
     <>
@@ -77,24 +173,28 @@ export default function Checker({ modal, setModal, course, category }) {
                   You selected {course} from the category {category}
                 </p>
                 <div className="mt-7">
-                  <BestCourse courses={bestCourseTemplate} status={status} />
+                  <BestCourse
+                    courses={bestCourses}
+                    status={status}
+                    message={message}
+                  />
                 </div>
               </aside>
-              <form
-                className="sm:w-[55%]"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  window.scrollY = 0;
-                  setStatus("okay");
-                }}
-              >
+              <form className="sm:w-[55%]" onSubmit={handleSubmit}>
                 {Array(inputCount)
                   .fill("")
-                  .map((a, c) => (
-                    <div className="flex justify-between w-full">
-                      <Textfield label={"Subject"} className="w-3/4 mx-2" />
+                  .map((_, index) => (
+                    <div key={index} className="flex justify-between w-full">
+                      <Textfield
+                        label={"Subject"}
+                        className="w-3/4 mx-2"
+                        value={subjects[index] || ""}
+                        onChange={(e) =>
+                          handleInputChange(index, e.target.value)
+                        }
+                      />
                       <SelectCase
-                        index={c}
+                        index={index}
                         className="w-1/4 mx-2"
                         chosenCase={chosenGrade}
                         setChosenCase={setChosenGrade}
@@ -106,7 +206,7 @@ export default function Checker({ modal, setModal, course, category }) {
                   styles={"outline-none"}
                   label={"Additional Comment - Help our algorithm."}
                   desc={
-                    "Expeciting informations like passion for a course, hobbies e.t.c, Leave empty if you dont want to share.\nNot more than 200 words"
+                    "Expecting informations like passion for a course, hobbies e.t.c, Leave empty if you dont want to share.\nNot more than 200 words"
                   }
                 />
                 <div className="flex my-2">
@@ -122,6 +222,7 @@ export default function Checker({ modal, setModal, course, category }) {
                     Add more
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       setInputCount(inputCount - 1);
                     }}

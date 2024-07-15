@@ -1,9 +1,11 @@
-import { useState } from "react";
-import DashBoardLayout from "../../Template";
-import { courses as initialCoursesData } from "../../fileStorage/data";
-import Checker from "../Checker";
+import { useEffect, useState } from "react";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import { courses as initialCoursesData } from "../../fileStorage/data";
+import DashBoardLayout from "../../Template";
+import Checker from "../Checker";
+import axios from "axios";
 
+// # Gets all the courses from file storage and restructure as an array of simpler objects.
 function getAllCourses() {
   let all = initialCoursesData.map((c) => {
     for (const category in c) {
@@ -14,12 +16,14 @@ function getAllCourses() {
       return { category: category, courses: courses };
     }
   });
+  console.log(all);
   return all;
 }
 
 export default function Main({ children }) {
   const [allCourses, setAllCourses] = useState(getAllCourses());
   const [openCheckerModal, setOpenCheckerModal] = useState(false);
+  // # the set course and set category just allows the record of chosen course and category to be passed.
   const [course, setCourse] = useState(null);
   const [category, setCategory] = useState(null);
 
@@ -46,6 +50,22 @@ export default function Main({ children }) {
     // Update the state with the new list
     setAllCourses(updatedCourses);
   };
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/submit-grades/"
+        );
+        const coursesData = response.data;
+        setAllCourses(getAllCourses(coursesData));
+      } catch (error) {
+        console.error("Error fetching courses data", error);
+      }
+    }
+
+    fetchCourses();
+  }, []);
 
   return (
     <>
